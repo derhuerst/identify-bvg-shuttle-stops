@@ -1,0 +1,33 @@
+{
+	"name": "identify-bvg-shuttle-stops",
+	"description": "Identify stops from recorded positions of the BVG autonomous shuttle.",
+	"version": "0.1.0",
+	"main": "index.js",
+	"files": [
+		"index.js"
+	],
+	"keywords": [
+		"bvg",
+		"bus",
+		"public transport",
+		"transit"
+	],
+	"author": "Jannis R <mail@jannisr.de>",
+	"homepage": "https://github.com/derhuerst/identify-bvg-shuttle-stops",
+	"repository": "derhuerst/identify-bvg-shuttle-stops",
+	"bugs": "https://github.com/derhuerst/identify-bvg-shuttle-stops/issues",
+	"license": "ISC",
+	"engines": {
+		"node": ">=6"
+	},
+	"dependencies": {
+	},
+	"devDependencies": {
+		"tap-min": "^1.2.2",
+		"tape": "^4.8.0"
+	},
+	"scripts": {
+		"test": "env NODE_ENV=dev node test.js | tap-min",
+		"prepublishOnly": "npm test"
+	}
+}
