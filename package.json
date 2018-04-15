@@ -21,6 +21,7 @@
 		"node": ">=6"
 	},
 	"dependencies": {
+		"gps-distance": "0.0.4"
 	},
 	"devDependencies": {
 		"tap-min": "^1.2.2",
