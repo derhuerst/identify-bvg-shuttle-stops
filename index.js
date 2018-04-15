@@ -61,7 +61,10 @@ const findStopovers = () => {
 				// split into two stopovers
 				duration = prevT - start + 1000
 				d.stopoverStarted = t - 1000
-			} else d.stopoverStarted = t
+			} else {
+				d.stopoverStarted = t
+				d.stopoverPositions = [{latitude, longitude}]
+			}
 			this.push({
 				start,
 				duration,
@@ -72,8 +75,6 @@ const findStopovers = () => {
 			d.stopoverPositions.push({latitude, longitude})
 		}
 
-		// todo: position
-
 		d.t = t
 		d.doorsOpen = doorsOpen
 		d.latitude = latitude
@@ -81,20 +82,59 @@ const findStopovers = () => {
 		cb()
 	}
 
-	const flush = (cb) => {
-		// todo
+	function flush (cb) {
+		for (let id in byVehicle) {
+			const d = byVehicle[id]
+			if (!d.doorsOpen) continue
+			const duration = Math.max(d.t - d.stopoverStarted, 2000)
+			this.push({
+				start: d.stopoverStarted,
+				duration,
+				position: computeCentroid(d.stopoverPositions)
+			})
+		}
+		cb()
 	}
 
 	return new Transform({objectMode: true, write, flush})
 }
 
-const findStops = (cb) => {
-	const write = (stopover, _, cb) => {
-		// todo
+const findStops = (done) => {
+	const stops = []
+
+	const write = ({start, duration, position}, _, cb) => {
+		const {latitude, longitude} = position
+
+		let stop, minD = Infinity
+		for (let s of stops) {
+			const d = distance(s.latitude, s.longitude, latitude, longitude)
+			if (d < .01 && d < minD) {
+				stop = s
+				minD = d
+			}
+		}
+
+		if (stop) {
+			stop.stopoverPositions.push(position)
+			const centroid = computeCentroid(stop.stopoverPositions)
+			stop.latitude = centroid.latitude
+			stop.longitude = centroid.longitude
+		} else {
+			stops.push({
+				latitude, longitude,
+				stopoverPositions: [position]
+			})
+		}
+
+		cb()
 	}
 
 	const final = (cb) => {
-		// todo
+		for (let stop of stops) {
+			delete stop.stopoverPositions
+		}
+		done(stops)
+		cb()
 	}
 
 	return new Writable({objectMode: true, write, final})
