@@ -116,12 +116,14 @@ const findStops = (done) => {
 
 		if (stop) {
 			stop.stopoverPositions.push(position)
+			stop.stopovers++
 			const centroid = computeCentroid(stop.stopoverPositions)
 			stop.latitude = centroid.latitude
 			stop.longitude = centroid.longitude
 		} else {
 			stops.push({
 				latitude, longitude,
+				stopovers: 1,
 				stopoverPositions: [position]
 			})
 		}
